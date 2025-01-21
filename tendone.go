@@ -3,15 +3,41 @@ package tendone
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
+	"time"
 )
+
+const MODULES_PATH = "/goform/modules"
 
 type Session struct {
 	uri     string
 	cookies []*http.Cookie
+}
+
+type LoginRequest struct {
+	SysLogin SysLoginRequest `json:"sysLogin"`
+}
+
+type LoginResponse struct {
+	SysLogin SysLoginResponse `json:"sysLogin"`
+}
+
+type SysLoginRequest struct {
+	Logoff   bool   `json:"logoff"`
+	Password string `json:"password"`
+	Time     string `json:"time"`
+	TimeZone int    `json:"timeZone"`
+	Username string `json:"username"`
+}
+
+type SysLoginResponse struct {
+	UserType string `json:"userType"`
+	Login    bool   `json:"Login"`
+	Logoff   bool   `json:"logoff"`
 }
 
 func NewSession(uri string) *Session {
@@ -56,35 +82,39 @@ func (s *Session) IsAutheticated() (bool, error) {
 	return true, nil
 }
 
-func (s *Session) Login(user, passwd string) error {
+func (s *Session) Login(user, passwd string) (bool, error) {
 	bpasswd := base64.StdEncoding.EncodeToString([]byte(passwd))
 
-	rbody := []byte(fmt.Sprintf(`
-{
-	"sysLogin": {
-		"logoff": false,
-		"password": "%s",
-		"time": "%s",
-		"timeZone": 12,
-		"username": "%s"
-	}
-}
-`, bpasswd, "2025;1;21;20;8;42", user))
-
-	resp, err := http.Post(s.uri+"/goform/modules", "application/json", bytes.NewReader(rbody))
-
-	if err != nil {
-		return err
+	sysLogin := LoginRequest{
+		SysLogin: SysLoginRequest{
+			Logoff:   false,
+			Password: bpasswd,
+			Time:     time.Now().Format("2006;1;2;15;4;5"),
+			TimeZone: 12,
+			Username: user,
+		},
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	rbody, err := json.Marshal(sysLogin)
+
+	resp, err := http.Post(s.uri+MODULES_PATH, "application/json", bytes.NewReader(rbody))
+
 	if err != nil {
-		return err
+		return false, err
+	}
+
+	var LoginResponse LoginResponse
+	if err := json.NewDecoder(resp.Body).Decode(&LoginResponse); err != nil {
+		return false, err
 	}
 
 	s.cookies = resp.Cookies()
 
-	fmt.Println(string(body))
+	fmt.Println(LoginResponse)
 
-	return nil
+	if LoginResponse.SysLogin.Login && LoginResponse.SysLogin.UserType == user {
+		return true, nil
+	}
+
+	return false, nil
 }
