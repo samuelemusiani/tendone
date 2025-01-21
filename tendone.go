@@ -57,8 +57,7 @@ func (s *Session) IsAutheticated() (bool, error) {
 }
 
 func (s *Session) Login(user, passwd string) error {
-
-	bpasswd := base64.StdEncoding.EncodeToString([]byte("neQIIYDcsu8GNP9v"))
+	bpasswd := base64.StdEncoding.EncodeToString([]byte(passwd))
 
 	rbody := []byte(fmt.Sprintf(`
 {
