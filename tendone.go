@@ -37,7 +37,8 @@ type SysLoginRequest struct {
 type SysLoginResponse struct {
 	UserType string `json:"userType"`
 	Login    bool   `json:"Login"`
-	Logoff   bool   `json:"logoff"`
+	// When loggin in Logoff is boolean, when logging out Logoff is a string :(
+	Logoff interface{} `json:"logoff"`
 }
 
 func NewSession(uri string) *Session {
@@ -117,4 +118,40 @@ func (s *Session) Login(user, passwd string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func (s *Session) Logout() (bool, error) {
+	sysLogin := LoginRequest{
+		SysLogin: SysLoginRequest{
+			Logoff: true,
+		},
+	}
+
+	rbody, err := json.Marshal(sysLogin)
+
+	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
+	if err != nil {
+		return false, err
+	}
+
+	for _, c := range s.cookies {
+		req.AddCookie(c)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return false, err
+	}
+
+	var SysLoginResponse LoginResponse
+	if err := json.NewDecoder(resp.Body).Decode(&SysLoginResponse); err != nil {
+		return false, err
+	}
+
+	if SysLoginResponse.SysLogin.Logoff.(string) == "ok" {
+		return true, nil
+	}
+
+	return false, nil
+
 }
