@@ -216,3 +216,108 @@ func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
 
 	return &ws.SSIDList, nil
 }
+
+type TrafficRequestWrap struct {
+	Traffic TrafficRequest `json:"wifiTraffic"`
+}
+
+type TrafficRequest struct {
+	Radio RadioType `json:"radio"`
+}
+
+type TrafficResponseWrap struct {
+	Traffic TrafficResponse `json:"wifiTraffic"`
+}
+
+type TrafficResponse []SSIDTraffic
+
+type SSIDTraffic struct {
+	SSID string `json:"ssid"`
+	// Mesurements are in MB
+	RxTraffic   string `json:"rxTraffic"`
+	RxPacketNum string `json:"rxPacketNum"`
+	// Mesurements are in MB
+	TxTraffic   string `json:"txTraffic"`
+	TxPacketNum string `json:"txPacketNum"`
+}
+
+func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
+	rbody, err := json.Marshal(TrafficRequestWrap{TrafficRequest{Radio: radio}})
+
+	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, c := range s.cookies {
+		req.AddCookie(c)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var tr TrafficResponseWrap
+	err = json.NewDecoder(resp.Body).Decode(&tr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &tr.Traffic, nil
+}
+
+type ClientListRequestWrap struct {
+	ClientListRequest ClientListRequest `json:"wifiClientList"`
+}
+
+type ClientListRequest struct {
+	Radio     RadioType `json:"radio"`
+	SSIDIndex string    `json:"ssidIndex"`
+}
+
+type ClientListResponseWrap struct {
+	ClientListResponse ClientListResponse `json:"wifiClientList"`
+}
+
+type ClientListResponse []WifiClient
+
+type WifiClient struct {
+	Select      string `json:"select"`
+	Index       string `json:"index"`
+	IP          string `json:"ip"`
+	MAC         string `json:"mac"`
+	ConnectTime string `json:"connectTime"`
+	TxRate      string `json:"txRate"`
+	RxRate      string `json:"rxRate"`
+	SignNoise   string `json:"signNoise"`
+	CCQ         string `json:"ccq"`
+	OsEnable    string `json:"osEnable"`
+	OsType      string `json:"osType"`
+}
+
+func (s *Session) ClientList(radio RadioType, ssidIndex int) (*ClientListResponse, error) {
+	rbody, err := json.Marshal(ClientListRequestWrap{ClientListRequest{Radio: radio, SSIDIndex: strconv.Itoa(ssidIndex)}})
+
+	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, c := range s.cookies {
+		req.AddCookie(c)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var cl ClientListResponseWrap
+	err = json.NewDecoder(resp.Body).Decode(&cl)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cl.ClientListResponse, nil
+}
