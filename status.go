@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type SysStatusWrap struct {
@@ -37,11 +38,11 @@ type LanStatus struct {
 	DNS1    string `json:"altDns"`
 }
 
-type WifiClientNumWrap struct {
-	WifiClientNum WifiClientNum `json:"wifiClientNum"`
+type ClientNumWrap struct {
+	ClientNum ClientNum `json:"wifiClientNum"`
 }
 
-type WifiClientNum struct {
+type ClientNum struct {
 	Num string `json:"clientNum"`
 }
 
@@ -96,8 +97,8 @@ func (s *Session) LanStatus() (*LanStatus, error) {
 	return &ls.LanStatus, nil
 }
 
-func (s *Session) WifiClientNum() (*WifiClientNum, error) {
-	rbody, err := json.Marshal(WifiClientNumWrap{})
+func (s *Session) ClientNum() (*ClientNum, error) {
+	rbody, err := json.Marshal(ClientNumWrap{})
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return nil, err
@@ -112,13 +113,13 @@ func (s *Session) WifiClientNum() (*WifiClientNum, error) {
 		return nil, err
 	}
 
-	var wc WifiClientNumWrap
+	var wc ClientNumWrap
 	err = json.NewDecoder(resp.Body).Decode(&wc)
 	if err != nil {
 		return nil, err
 	}
 
-	return &wc.WifiClientNum, nil
+	return &wc.ClientNum, nil
 }
 
 type RadioType string
@@ -126,26 +127,26 @@ type RadioType string
 var Radio2_4G RadioType = "2.4G"
 var Radio5G RadioType = "5G"
 
-type WifiRadioStatusRequest struct {
+type RadioStatusRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
-type WifiRadioStatusRequestWrap struct {
-	WifiRadioStatus WifiRadioStatusRequest `json:"wifiRadioStatus"`
+type RadioStatusRequestWrap struct {
+	RadioStatus RadioStatusRequest `json:"wifiRadioStatus"`
 }
 
-type WifiRadioStatusResponse struct {
-	NetMode     string `json:"netMode"`
-	Channel     string `json:"channel"`
-	WifiRadioEn bool   `json:"wifiRadioEn"`
+type RadioStatusResponse struct {
+	NetMode string `json:"netMode"`
+	Channel string `json:"channel"`
+	RadioEn bool   `json:"wifiRadioEn"`
 }
 
-type WifiRadioStatusResponseWrap struct {
-	WifiRadioStatus WifiRadioStatusResponse `json:"wifiRadioStatus"`
+type RadioStatusResponseWrap struct {
+	RadioStatus RadioStatusResponse `json:"wifiRadioStatus"`
 }
 
-func (s *Session) WifiRadioStatus(radio RadioType) (*WifiRadioStatusResponse, error) {
-	rbody, err := json.Marshal(WifiRadioStatusRequestWrap{WifiRadioStatusRequest{Radio: radio}})
+func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
+	rbody, err := json.Marshal(RadioStatusRequestWrap{RadioStatusRequest{Radio: radio}})
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return nil, err
@@ -160,28 +161,28 @@ func (s *Session) WifiRadioStatus(radio RadioType) (*WifiRadioStatusResponse, er
 		return nil, err
 	}
 
-	var wr WifiRadioStatusResponseWrap
+	var wr RadioStatusResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&wr)
 	if err != nil {
 		return nil, err
 	}
 
-	return &wr.WifiRadioStatus, nil
+	return &wr.RadioStatus, nil
 }
 
-type WifiSSIDListRequestWrap struct {
-	WifiSSIDList WifiSSIDListRequest `json:"wifiSsidList"`
+type SSIDListRequestWrap struct {
+	SSIDList SSIDListRequest `json:"wifiSsidList"`
 }
 
-type WifiSSIDListRequest struct {
+type SSIDListRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
-type WifiSSIDListResponseWrap struct {
-	WifiSSIDList WifiSSIDListResponse `json:"wifiSsidList"`
+type SSIDListResponseWrap struct {
+	SSIDList SSIDListResponse `json:"wifiSsidList"`
 }
 
-type WifiSSIDListResponse []SSID
+type SSIDListResponse []SSID
 
 type SSID struct {
 	SSID     string `json:"ssid"`
@@ -190,8 +191,8 @@ type SSID struct {
 	Security string `json:"security"`
 }
 
-func (s *Session) WifiSSIDList(radio RadioType) (*WifiSSIDListResponse, error) {
-	rbody, err := json.Marshal(WifiSSIDListRequestWrap{WifiSSIDListRequest{Radio: radio}})
+func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
+	rbody, err := json.Marshal(SSIDListRequestWrap{SSIDListRequest{Radio: radio}})
 
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
@@ -207,11 +208,11 @@ func (s *Session) WifiSSIDList(radio RadioType) (*WifiSSIDListResponse, error) {
 		return nil, err
 	}
 
-	var ws WifiSSIDListResponseWrap
+	var ws SSIDListResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&ws)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ws.WifiSSIDList, nil
+	return &ws.SSIDList, nil
 }
