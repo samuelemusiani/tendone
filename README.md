@@ -22,8 +22,30 @@ fmt.Println("Logged in:", logged)
 ## Todo
 
 - [x] Status
+    - [x] System Status
+    - [x] Wireless Status
+    - [x] Traffic Statistics
+    - [x] Client List
 - [ ] Quick Setup
 - [x] Internet settings
 - [ ] Wireless
+    - [ ] SSID
+    - [ ] RF Settings
+    - [ ] RF Optimization
+    - [ ] Frequency Analysis
+    - [ ] WMM
+    - [ ] Access Control
+    - [ ] Advanced Settings
+    - [ ] QVLAN Settings
+    - [ ] WiFi Schedule
 - [ ] Advanced
+    - [ ] Traffic Control
+    - [ ] Cloud Maintenance
+    - [ ] Remote Management
 - [ ] Tools
+    - [ ] Date & Time
+    - [ ] Maintenance
+    - [ ] Account
+    - [ ] System Log
+    - [ ] Diagnostic Tool
+    - [ ] Uplink Detection
