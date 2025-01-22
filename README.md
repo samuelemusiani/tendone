@@ -11,7 +11,7 @@ s := tendone.NewSession("http://tenda-ap.int")
 
 Login the session:
 ```go
-logged, err := s.Login("admin", "uq1hMoCHEZt3NEsFxXT2")
+logged, err := s.Login("admin", "password")
 if err != nil {
     log.Fatal(err)
 }
