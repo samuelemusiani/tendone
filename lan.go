@@ -16,16 +16,21 @@ type LanConfigGetResponseWrap struct {
 	Config LanConfig `json:"lanCfgGet"`
 }
 
+type EthMode string
+
+var EthModeAuto EthMode = "auto"
+var EthMode10M EthMode = "10M"
+
 type LanConfig struct {
-	Type       string `json:"lanType"`
-	DeviceName string `json:"deviceName"`
-	MAC        string `json:"lanMac"`
-	IP         string `json:"lanIp"`
-	Mask       string `json:"lanMask"`
-	Gateway    string `json:"lanGw"`
-	DNS0       string `json:"preDns"`
-	DNS1       string `json:"altDns"`
-	EthMode    string `json:"ethMode"`
+	Type       string  `json:"lanType"`
+	DeviceName string  `json:"deviceName"`
+	MAC        string  `json:"lanMac"`
+	IP         string  `json:"lanIp"`
+	Mask       string  `json:"lanMask"`
+	Gateway    string  `json:"lanGw"`
+	DNS0       string  `json:"preDns"`
+	DNS1       string  `json:"altDns"`
+	EthMode    EthMode `json:"ethMode"`
 }
 
 type LanConfigSetRequestWrap struct {
