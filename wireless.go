@@ -1,10 +1,8 @@
 package tendone
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
-	"net/http"
 )
 
 type basicGetIndoorRequestWrap struct {
@@ -38,16 +36,7 @@ type BasicGetIndoorResponse struct {
 func (s *Session) BasicGetIndoor(radio RadioType, ssidIndex string) (*BasicGetIndoorResponse, error) {
 	rbody, err := json.Marshal(basicGetIndoorRequestWrap{BasicGetIndoorRequest{Radio: radio, SSIDIndex: ssidIndex}})
 
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -91,16 +80,7 @@ type BasicSetIndoorResponse string
 func (s *Session) BasicSetIndoor(bs BasicSetIndoorRequest) (bool, error) {
 	rbody, err := json.Marshal(basicSetIndoorRequestWrap{bs})
 
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return false, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return false, err
 	}

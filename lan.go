@@ -1,9 +1,7 @@
 package tendone
 
 import (
-	"bytes"
 	"encoding/json"
-	"net/http"
 )
 
 type lanConfigGetRequestWrap struct {
@@ -43,16 +41,7 @@ type lanConfigSetResponseWrap struct {
 
 func (s *Session) LanConfigGet() (*LanConfig, error) {
 	rbody, err := json.Marshal(lanConfigGetRequestWrap{})
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -68,16 +57,7 @@ func (s *Session) LanConfigGet() (*LanConfig, error) {
 
 func (s *Session) LanConfigSet(lc *LanConfig) (bool, error) {
 	rbody, err := json.Marshal(lanConfigSetRequestWrap{Config: *lc})
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return false, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return false, err
 	}

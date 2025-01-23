@@ -1,9 +1,7 @@
 package tendone
 
 import (
-	"bytes"
 	"encoding/json"
-	"net/http"
 	"strconv"
 )
 
@@ -48,17 +46,7 @@ type ClientNum struct {
 
 func (s *Session) GetSysStatus() (*SysStatus, error) {
 	rbody, err := json.Marshal(sysStatusWrap{})
-
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -74,16 +62,7 @@ func (s *Session) GetSysStatus() (*SysStatus, error) {
 
 func (s *Session) LanStatus() (*LanStatus, error) {
 	rbody, err := json.Marshal(lanStatusWrap{})
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -99,16 +78,7 @@ func (s *Session) LanStatus() (*LanStatus, error) {
 
 func (s *Session) ClientNum() (*ClientNum, error) {
 	rbody, err := json.Marshal(clientNumWrap{})
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -147,16 +117,7 @@ type radioStatusResponseWrap struct {
 
 func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
 	rbody, err := json.Marshal(radioStatusRequestWrap{RadioStatusRequest{Radio: radio}})
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -193,17 +154,7 @@ type SSID struct {
 
 func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
 	rbody, err := json.Marshal(ssidListRequestWrap{SSIDListRequest{Radio: radio}})
-
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -243,17 +194,7 @@ type SSIDTraffic struct {
 
 func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
 	rbody, err := json.Marshal(trafficRequestWrap{TrafficRequest{Radio: radio}})
-
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}
@@ -301,17 +242,7 @@ type WifiClient struct {
 
 func (s *Session) ClientList(radio RadioType, ssidIndex int) (*ClientListResponse, error) {
 	rbody, err := json.Marshal(clientListRequestWrap{ClientListRequest{Radio: radio, SSIDIndex: strconv.Itoa(ssidIndex)}})
-
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
 	}

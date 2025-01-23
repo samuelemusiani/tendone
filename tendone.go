@@ -25,6 +25,7 @@ The code does not check for errors, but you should always do it.
 package tendone
 
 import (
+	"bytes"
 	"net/http"
 )
 
@@ -48,4 +49,24 @@ func NewSession(uri string) *Session {
 // GetURI returns the uri of the session
 func (s *Session) GetURI() string {
 	return s.uri
+}
+
+// As almost all the functions in this library are the same, this function is used
+// to fetch the data from the access point avoiding code duplication.
+func fetch(s *Session, body []byte) (*http.Response, error) {
+	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, c := range s.cookies {
+		req.AddCookie(c)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }

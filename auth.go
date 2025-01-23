@@ -129,17 +129,11 @@ func (s *Session) Logout() (bool, error) {
 	}
 
 	rbody, err := json.Marshal(sysLogin)
-
-	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return false, err
 	}
 
-	for _, c := range s.cookies {
-		req.AddCookie(c)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := fetch(s, rbody)
 	if err != nil {
 		return false, err
 	}
