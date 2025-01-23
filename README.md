@@ -29,7 +29,7 @@ fmt.Println("Logged in:", logged)
 - [ ] Quick Setup
 - [x] Internet settings
 - [ ] Wireless
-    - [ ] SSID
+    - [x] SSID
     - [ ] RF Settings
     - [ ] RF Optimization
     - [ ] Frequency Analysis
