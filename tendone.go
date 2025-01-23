@@ -1,7 +1,7 @@
 /*
 Package tendone provides a simple library to interact with a Tenda i27 access
 point. This could be used to automate some tasks, monitor the device or to
-create a new and better web interface with simpler and more powerfull apis.
+create a new and better web interface with simpler and more powerful apis.
 This could also be used to automate changes across multiple devices, without
 exposing them to the internet with the Tenda could service.
 
