@@ -283,17 +283,20 @@ type ClientListResponseWrap struct {
 type ClientListResponse []WifiClient
 
 type WifiClient struct {
-	Select      string `json:"select"`
-	Index       string `json:"index"`
-	IP          string `json:"ip"`
-	MAC         string `json:"mac"`
+	Select string `json:"select"`
+	Index  string `json:"index"`
+	IP     string `json:"ip"`
+	MAC    string `json:"mac"`
+	// Mesurements are in seconds
 	ConnectTime string `json:"connectTime"`
-	TxRate      string `json:"txRate"`
-	RxRate      string `json:"rxRate"`
-	SignNoise   string `json:"signNoise"`
-	CCQ         string `json:"ccq"`
-	OsEnable    string `json:"osEnable"`
-	OsType      string `json:"osType"`
+	// Mesurements are in Mbps
+	TxRate string `json:"txRate"`
+	// Mesurements are in Mbps
+	RxRate    string `json:"rxRate"`
+	SignNoise string `json:"signNoise"`
+	CCQ       string `json:"ccq"`
+	OsEnable  string `json:"osEnable"`
+	OsType    string `json:"osType"`
 }
 
 func (s *Session) ClientList(radio RadioType, ssidIndex int) (*ClientListResponse, error) {
