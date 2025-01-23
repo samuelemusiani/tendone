@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-type SysStatusWrap struct {
+type sysStatusWrap struct {
 	SysStatus SysStatus `json:"sysStatus"`
 }
 
@@ -25,7 +25,7 @@ type SysStatus struct {
 	BridgeStatus    bool   `json:"bridgeStatus"`
 }
 
-type LanStatusWrap struct {
+type lanStatusWrap struct {
 	LanStatus LanStatus `json:"lanStatus"`
 }
 
@@ -38,7 +38,7 @@ type LanStatus struct {
 	DNS1    string `json:"altDns"`
 }
 
-type ClientNumWrap struct {
+type clientNumWrap struct {
 	ClientNum ClientNum `json:"wifiClientNum"`
 }
 
@@ -47,7 +47,7 @@ type ClientNum struct {
 }
 
 func (s *Session) GetSysStatus() (*SysStatus, error) {
-	rbody, err := json.Marshal(SysStatusWrap{})
+	rbody, err := json.Marshal(sysStatusWrap{})
 
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *Session) GetSysStatus() (*SysStatus, error) {
 		return nil, err
 	}
 
-	var ss SysStatusWrap
+	var ss sysStatusWrap
 	err = json.NewDecoder(resp.Body).Decode(&ss)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (s *Session) GetSysStatus() (*SysStatus, error) {
 }
 
 func (s *Session) LanStatus() (*LanStatus, error) {
-	rbody, err := json.Marshal(LanStatusWrap{})
+	rbody, err := json.Marshal(lanStatusWrap{})
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (s *Session) LanStatus() (*LanStatus, error) {
 		return nil, err
 	}
 
-	var ls LanStatusWrap
+	var ls lanStatusWrap
 	err = json.NewDecoder(resp.Body).Decode(&ls)
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (s *Session) LanStatus() (*LanStatus, error) {
 }
 
 func (s *Session) ClientNum() (*ClientNum, error) {
-	rbody, err := json.Marshal(ClientNumWrap{})
+	rbody, err := json.Marshal(clientNumWrap{})
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (s *Session) ClientNum() (*ClientNum, error) {
 		return nil, err
 	}
 
-	var wc ClientNumWrap
+	var wc clientNumWrap
 	err = json.NewDecoder(resp.Body).Decode(&wc)
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ type RadioStatusRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
-type RadioStatusRequestWrap struct {
+type radioStatusRequestWrap struct {
 	RadioStatus RadioStatusRequest `json:"wifiRadioStatus"`
 }
 
@@ -141,12 +141,12 @@ type RadioStatusResponse struct {
 	RadioEn bool   `json:"wifiRadioEn"`
 }
 
-type RadioStatusResponseWrap struct {
+type radioStatusResponseWrap struct {
 	RadioStatus RadioStatusResponse `json:"wifiRadioStatus"`
 }
 
 func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
-	rbody, err := json.Marshal(RadioStatusRequestWrap{RadioStatusRequest{Radio: radio}})
+	rbody, err := json.Marshal(radioStatusRequestWrap{RadioStatusRequest{Radio: radio}})
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return nil, err
@@ -161,7 +161,7 @@ func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
 		return nil, err
 	}
 
-	var wr RadioStatusResponseWrap
+	var wr radioStatusResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&wr)
 	if err != nil {
 		return nil, err
@@ -170,7 +170,7 @@ func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
 	return &wr.RadioStatus, nil
 }
 
-type SSIDListRequestWrap struct {
+type ssidListRequestWrap struct {
 	SSIDList SSIDListRequest `json:"wifiSsidList"`
 }
 
@@ -178,7 +178,7 @@ type SSIDListRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
-type SSIDListResponseWrap struct {
+type ssidListResponseWrap struct {
 	SSIDList SSIDListResponse `json:"wifiSsidList"`
 }
 
@@ -192,7 +192,7 @@ type SSID struct {
 }
 
 func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
-	rbody, err := json.Marshal(SSIDListRequestWrap{SSIDListRequest{Radio: radio}})
+	rbody, err := json.Marshal(ssidListRequestWrap{SSIDListRequest{Radio: radio}})
 
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
@@ -208,7 +208,7 @@ func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
 		return nil, err
 	}
 
-	var ws SSIDListResponseWrap
+	var ws ssidListResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&ws)
 	if err != nil {
 		return nil, err
@@ -217,7 +217,7 @@ func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
 	return &ws.SSIDList, nil
 }
 
-type TrafficRequestWrap struct {
+type trafficRequestWrap struct {
 	Traffic TrafficRequest `json:"wifiTraffic"`
 }
 
@@ -225,7 +225,7 @@ type TrafficRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
-type TrafficResponseWrap struct {
+type trafficResponseWrap struct {
 	Traffic TrafficResponse `json:"wifiTraffic"`
 }
 
@@ -242,7 +242,7 @@ type SSIDTraffic struct {
 }
 
 func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
-	rbody, err := json.Marshal(TrafficRequestWrap{TrafficRequest{Radio: radio}})
+	rbody, err := json.Marshal(trafficRequestWrap{TrafficRequest{Radio: radio}})
 
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
@@ -258,7 +258,7 @@ func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
 		return nil, err
 	}
 
-	var tr TrafficResponseWrap
+	var tr trafficResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&tr)
 	if err != nil {
 		return nil, err
@@ -267,7 +267,7 @@ func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
 	return &tr.Traffic, nil
 }
 
-type ClientListRequestWrap struct {
+type clientListRequestWrap struct {
 	ClientListRequest ClientListRequest `json:"wifiClientList"`
 }
 
@@ -276,7 +276,7 @@ type ClientListRequest struct {
 	SSIDIndex string    `json:"ssidIndex"`
 }
 
-type ClientListResponseWrap struct {
+type clientListResponseWrap struct {
 	ClientListResponse ClientListResponse `json:"wifiClientList"`
 }
 
@@ -300,7 +300,7 @@ type WifiClient struct {
 }
 
 func (s *Session) ClientList(radio RadioType, ssidIndex int) (*ClientListResponse, error) {
-	rbody, err := json.Marshal(ClientListRequestWrap{ClientListRequest{Radio: radio, SSIDIndex: strconv.Itoa(ssidIndex)}})
+	rbody, err := json.Marshal(clientListRequestWrap{ClientListRequest{Radio: radio, SSIDIndex: strconv.Itoa(ssidIndex)}})
 
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
@@ -316,7 +316,7 @@ func (s *Session) ClientList(radio RadioType, ssidIndex int) (*ClientListRespons
 		return nil, err
 	}
 
-	var cl ClientListResponseWrap
+	var cl clientListResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&cl)
 	if err != nil {
 		return nil, err

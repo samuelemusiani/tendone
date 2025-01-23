@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-type LanConfigGetRequestWrap struct {
+type lanConfigGetRequestWrap struct {
 	Config LanConfigGetRequest `json:"lanCfgGet"`
 }
 
 type LanConfigGetRequest struct{}
 
-type LanConfigGetResponseWrap struct {
+type lanConfigGetResponseWrap struct {
 	Config LanConfig `json:"lanCfgGet"`
 }
 
@@ -33,16 +33,16 @@ type LanConfig struct {
 	EthMode    EthMode `json:"ethMode"`
 }
 
-type LanConfigSetRequestWrap struct {
+type lanConfigSetRequestWrap struct {
 	Config LanConfig `json:"lanCfgSet"`
 }
 
-type LanConfigSetResponseWrap struct {
+type lanConfigSetResponseWrap struct {
 	Resp string `json:"lanCfgSet"`
 }
 
 func (s *Session) LanConfigGet() (*LanConfig, error) {
-	rbody, err := json.Marshal(LanConfigGetRequestWrap{})
+	rbody, err := json.Marshal(lanConfigGetRequestWrap{})
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (s *Session) LanConfigGet() (*LanConfig, error) {
 		return nil, err
 	}
 
-	var lcr LanConfigGetResponseWrap
+	var lcr lanConfigGetResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&lcr)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (s *Session) LanConfigGet() (*LanConfig, error) {
 }
 
 func (s *Session) LanConfigSet(lc *LanConfig) (bool, error) {
-	rbody, err := json.Marshal(LanConfigSetRequestWrap{Config: *lc})
+	rbody, err := json.Marshal(lanConfigSetRequestWrap{Config: *lc})
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(rbody))
 	if err != nil {
 		return false, err
@@ -82,7 +82,7 @@ func (s *Session) LanConfigSet(lc *LanConfig) (bool, error) {
 		return false, err
 	}
 
-	var lcs LanConfigSetResponseWrap
+	var lcs lanConfigSetResponseWrap
 	err = json.NewDecoder(resp.Body).Decode(&lcs)
 	if err != nil {
 		return false, err
