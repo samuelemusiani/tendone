@@ -87,6 +87,7 @@ type basicSetIndoorResponseWrap struct {
 
 type BasicSetIndoorResponse string
 
+// BasicSetIndoor sets the indoor settings for a given SSID.
 func (s *Session) BasicSetIndoor(bs BasicSetIndoorRequest) (bool, error) {
 	rbody, err := json.Marshal(basicSetIndoorRequestWrap{bs})
 

@@ -11,29 +11,38 @@ import (
 	"time"
 )
 
+type loginRequestWrap struct {
+	SysLogin LoginRequest `json:"sysLogin"`
+}
+
+type loginResponseWrap struct {
+	SysLogin LoginResponse `json:"sysLogin"`
+}
+
+// LoginRequest is the struct used to login to the AP. It's also used to logout
 type LoginRequest struct {
-	SysLogin SysLoginRequest `json:"sysLogin"`
-}
-
-type LoginResponse struct {
-	SysLogin SysLoginResponse `json:"sysLogin"`
-}
-
-type SysLoginRequest struct {
-	Logoff   bool   `json:"logoff"`
+	Username string `json:"username"`
 	Password string `json:"password"`
+	// Time is formatted as "2006;1;2;15;4;5" and is used to be printed in the logs
 	Time     string `json:"time"`
 	TimeZone int    `json:"timeZone"`
-	Username string `json:"username"`
+	Logoff   bool   `json:"logoff"`
 }
 
-type SysLoginResponse struct {
+// LoginResponse is the struct that is returned when logging in. It's also used
+// to logout
+type LoginResponse struct {
 	UserType string `json:"userType"`
 	Login    bool   `json:"Login"`
 	// When loggin in Logoff is boolean, when logging out Logoff is a string :(
 	Logoff interface{} `json:"logoff"`
 }
 
+// IsAutheticated checks if the session is authenticated. This is done by checking
+// if the main index.html page redirects to the login page.
+//
+// TODO: Check if this is the only way or I could use the API used for all the
+// library
 func (s *Session) IsAutheticated() (bool, error) {
 	req, err := http.NewRequest("GET", s.uri, nil)
 	if err != nil {
@@ -68,11 +77,13 @@ func (s *Session) IsAutheticated() (bool, error) {
 	return true, nil
 }
 
+// Login is used to login a session with the AP. This should be the first function
+// to be called after creating a new session.
 func (s *Session) Login(user, passwd string) (bool, error) {
 	bpasswd := base64.StdEncoding.EncodeToString([]byte(passwd))
 
-	sysLogin := LoginRequest{
-		SysLogin: SysLoginRequest{
+	sysLogin := loginRequestWrap{
+		SysLogin: LoginRequest{
 			Logoff:   false,
 			Password: bpasswd,
 			Time:     time.Now().Format("2006;1;2;15;4;5"),
@@ -89,7 +100,7 @@ func (s *Session) Login(user, passwd string) (bool, error) {
 		return false, err
 	}
 
-	var LoginResponse LoginResponse
+	var LoginResponse loginResponseWrap
 	if err := json.NewDecoder(resp.Body).Decode(&LoginResponse); err != nil {
 		return false, err
 	}
@@ -105,9 +116,14 @@ func (s *Session) Login(user, passwd string) (bool, error) {
 	return false, nil
 }
 
+// Logout is used to logout a session with the AP. This should be the last function
+// to be called before the session is destroyed. You should call this function
+// even though the session is destroyed because the AP has NOT a strong security
+// and session management, so if you leave the session open there is a possiblity
+// that someone could use it to access the access point.
 func (s *Session) Logout() (bool, error) {
-	sysLogin := LoginRequest{
-		SysLogin: SysLoginRequest{
+	sysLogin := loginRequestWrap{
+		SysLogin: LoginRequest{
 			Logoff: true,
 		},
 	}
@@ -128,7 +144,7 @@ func (s *Session) Logout() (bool, error) {
 		return false, err
 	}
 
-	var SysLoginResponse LoginResponse
+	var SysLoginResponse loginResponseWrap
 	if err := json.NewDecoder(resp.Body).Decode(&SysLoginResponse); err != nil {
 		return false, err
 	}
