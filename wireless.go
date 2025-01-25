@@ -210,3 +210,59 @@ func (s *Session) SSIDSecuritySet(ssr SSIDSecurityResponse) (bool, error) {
 
 	return true, nil
 }
+
+// TODO: RF Settings
+
+// TODO: RF Optimization
+
+type channelAnalyseRequestWrap struct {
+	Req ChannelAnalyseRequest `json:"wifiChannelAnalyse"`
+}
+
+type ChannelList string
+
+var (
+	ChannelList2_4G ChannelList = "1,2,3,4,5,6,7,8,9,10,11,12,13"
+	ChannelList5G   ChannelList = "36,40,44,48,149,153,157,161"
+)
+
+type ChannelAnalyseRequest struct {
+	Channels ChannelList `json:"channel"`
+	Radio    RadioType   `json:"radio"`
+}
+
+type channelAnalyseResponseWrap struct {
+	Resp ChannelAnalyseResponse `json:"wifiChannelAnalyse"`
+}
+
+type ChannelAnalyseResponse struct {
+	TotalSSID string `json:"channelNum"`
+	Percent   string `json:"channelPercent"`
+}
+
+func (s *Session) ChannelAnalyse(radio RadioType) (*ChannelAnalyseResponse, error) {
+	var channels ChannelList
+	switch radio {
+	case Radio2_4G:
+		channels = ChannelList2_4G
+	case Radio5G:
+		channels = ChannelList5G
+	default:
+		return nil, errors.New("Invalid radio type")
+	}
+
+	rbody, err := json.Marshal(channelAnalyseRequestWrap{ChannelAnalyseRequest{Channels: channels, Radio: radio}})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := fetch(s, rbody)
+
+	var wr channelAnalyseResponseWrap
+	err = json.NewDecoder(resp.Body).Decode(&wr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &wr.Resp, nil
+}
