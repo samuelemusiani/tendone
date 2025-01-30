@@ -2,13 +2,12 @@ package tendone
 
 import (
 	"encoding/json"
+	"errors"
 )
 
 type lanConfigGetRequestWrap struct {
-	Config LanConfigGetRequest `json:"lanCfgGet"`
+	Config interface{} `json:"lanCfgGet"`
 }
-
-type LanConfigGetRequest struct{}
 
 type lanConfigGetResponseWrap struct {
 	Config LanConfig `json:"lanCfgGet"`
@@ -16,8 +15,20 @@ type lanConfigGetResponseWrap struct {
 
 type EthMode string
 
-var EthModeAuto EthMode = "auto"
-var EthMode10M EthMode = "10M"
+var ErrInvalidEthMode = errors.New("Invalid EthMode")
+
+const (
+	EthModeAuto EthMode = "auto"
+	EthMode10M  EthMode = "10M"
+)
+
+func isValidEthMode(em EthMode) bool {
+	switch em {
+	case EthModeAuto, EthMode10M:
+		return true
+	}
+	return false
+}
 
 type LanConfig struct {
 	Type       string  `json:"lanType"`

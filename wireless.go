@@ -6,10 +6,10 @@ import (
 )
 
 type basicGetIndoorRequestWrap struct {
-	BasicGetIndoor BasicGetIndoorRequest `json:"wifiBasicGetIndoor"`
+	BasicGetIndoor basicGetIndoorRequest `json:"wifiBasicGetIndoor"`
 }
 
-type BasicGetIndoorRequest struct {
+type basicGetIndoorRequest struct {
 	Radio     RadioType `json:"radio"`
 	SSIDIndex string    `json:"ssidIndex"`
 }
@@ -34,7 +34,7 @@ type BasicGetIndoorResponse struct {
 }
 
 func (s *Session) BasicGetIndoor(radio RadioType, ssidIndex string) (*BasicGetIndoorResponse, error) {
-	rbody, err := json.Marshal(basicGetIndoorRequestWrap{BasicGetIndoorRequest{Radio: radio, SSIDIndex: ssidIndex}})
+	rbody, err := json.Marshal(basicGetIndoorRequestWrap{basicGetIndoorRequest{Radio: radio, SSIDIndex: ssidIndex}})
 
 	resp, err := fetch(s, rbody)
 	if err != nil {
@@ -71,10 +71,10 @@ type BasicSetIndoorRequest struct {
 }
 
 type basicSetIndoorResponseWrap struct {
-	SetIndoorResponse BasicSetIndoorResponse `json:"wifiBasicSetIndoor"`
+	SetIndoorResponse basicSetIndoorResponse `json:"wifiBasicSetIndoor"`
 }
 
-type BasicSetIndoorResponse string
+type basicSetIndoorResponse string
 
 // BasicSetIndoor sets the indoor settings for a given SSID.
 func (s *Session) BasicSetIndoor(bs BasicSetIndoorRequest) (bool, error) {
@@ -99,10 +99,10 @@ func (s *Session) BasicSetIndoor(bs BasicSetIndoorRequest) (bool, error) {
 }
 
 type ssidSecurityRequestWrap struct {
-	Req SSIDSecurityRequest `json:"apSecurityGet"`
+	Req ssidSecurityRequest `json:"apSecurityGet"`
 }
 
-type SSIDSecurityRequest struct {
+type ssidSecurityRequest struct {
 	Radio     RadioType `json:"radio"`
 	SSIDIndex string    `json:"ssidIndex"`
 }
@@ -113,7 +113,7 @@ type ssidSecurityResponseWrap struct {
 
 type SSIDSecurityType string
 
-var (
+const (
 	SSIDSecurityTypeNone           SSIDSecurityType = "none"
 	SSIDSecurityTypeWep            SSIDSecurityType = "wep"
 	SSIDSecurityTypeWpaPsk         SSIDSecurityType = "wpa-psk"
@@ -127,14 +127,14 @@ var (
 
 type WepSecurityMode string
 
-var (
+const (
 	WepSecurityModeOpen   WepSecurityMode = "open"
 	WepSecurityModeShared WepSecurityMode = "shared"
 )
 
 type WepKeyFormat string
 
-var (
+const (
 	WepKeyFormatAscii WepKeyFormat = "ascii"
 	WepKeyFormatHex   WepKeyFormat = "hex"
 )
@@ -168,7 +168,7 @@ type SSIDSecurityResponse struct {
 }
 
 func (s *Session) SSIDSecurityGet(radio RadioType, ssidIndex string) (*SSIDSecurityResponse, error) {
-	rbody, err := json.Marshal(ssidSecurityRequestWrap{SSIDSecurityRequest{Radio: radio, SSIDIndex: ssidIndex}})
+	rbody, err := json.Marshal(ssidSecurityRequestWrap{ssidSecurityRequest{Radio: radio, SSIDIndex: ssidIndex}})
 	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
@@ -216,17 +216,17 @@ func (s *Session) SSIDSecuritySet(ssr SSIDSecurityResponse) (bool, error) {
 // TODO: RF Optimization
 
 type channelAnalyseRequestWrap struct {
-	Req ChannelAnalyseRequest `json:"wifiChannelAnalyse"`
+	Req channelAnalyseRequest `json:"wifiChannelAnalyse"`
 }
 
 type ChannelList string
 
-var (
+const (
 	ChannelList2_4G ChannelList = "1,2,3,4,5,6,7,8,9,10,11,12,13"
 	ChannelList5G   ChannelList = "36,40,44,48,149,153,157,161"
 )
 
-type ChannelAnalyseRequest struct {
+type channelAnalyseRequest struct {
 	Channels ChannelList `json:"channel"`
 	Radio    RadioType   `json:"radio"`
 }
@@ -248,10 +248,10 @@ func (s *Session) ChannelAnalyse(radio RadioType) (*ChannelAnalyseResponse, erro
 	case Radio5G:
 		channels = ChannelList5G
 	default:
-		return nil, errors.New("Invalid radio type")
+		return nil, ErrInvalidRadio
 	}
 
-	rbody, err := json.Marshal(channelAnalyseRequestWrap{ChannelAnalyseRequest{Channels: channels, Radio: radio}})
+	rbody, err := json.Marshal(channelAnalyseRequestWrap{channelAnalyseRequest{Channels: channels, Radio: radio}})
 	if err != nil {
 		return nil, err
 	}

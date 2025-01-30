@@ -13,15 +13,15 @@ import (
 )
 
 type loginRequestWrap struct {
-	SysLogin LoginRequest `json:"sysLogin"`
+	SysLogin loginRequest `json:"sysLogin"`
 }
 
 type loginResponseWrap struct {
-	SysLogin LoginResponse `json:"sysLogin"`
+	SysLogin loginResponse `json:"sysLogin"`
 }
 
-// LoginRequest is the struct used to login to the AP. It's also used to logout
-type LoginRequest struct {
+// loginRequest is the struct used to login to the AP. It's also used to logout
+type loginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	// Time is formatted as "2006;1;2;15;4;5" and is used to be printed in the logs
@@ -30,9 +30,9 @@ type LoginRequest struct {
 	Logoff   bool   `json:"logoff"`
 }
 
-// LoginResponse is the struct that is returned when logging in. It's also used
+// loginResponse is the struct that is returned when logging in. It's also used
 // to logout
-type LoginResponse struct {
+type loginResponse struct {
 	UserType string `json:"userType"`
 	Login    bool   `json:"Login"`
 	// When loggin in Logoff is boolean, when logging out Logoff is a string :(
@@ -88,7 +88,7 @@ func (s *Session) Login(user, passwd string) (bool, error) {
 	bpasswd := base64.StdEncoding.EncodeToString([]byte(passwd))
 
 	sysLogin := loginRequestWrap{
-		SysLogin: LoginRequest{
+		SysLogin: loginRequest{
 			Logoff:   false,
 			Password: bpasswd,
 			Time:     time.Now().Format("2006;1;2;15;4;5"),
@@ -128,7 +128,7 @@ func (s *Session) Login(user, passwd string) (bool, error) {
 // that someone could use it to access the access point.
 func (s *Session) Logout() (bool, error) {
 	sysLogin := loginRequestWrap{
-		SysLogin: LoginRequest{
+		SysLogin: loginRequest{
 			Logoff: true,
 		},
 	}

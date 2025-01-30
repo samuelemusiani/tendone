@@ -9,10 +9,8 @@ import (
 )
 
 type rebootRequestWrap struct {
-	Req RebootRequest `json:"sysReboot"`
+	Req string `json:"sysReboot"`
 }
-
-type RebootRequest string
 
 // Reboot the AP. Expect the connection to be closed after this command. Logout
 // is not needed.
@@ -72,10 +70,10 @@ type ledCtrlRequestWrap struct {
 }
 
 type ledCtrlGetResponseWrap struct {
-	Resp LedCtrlGetResponse `json:"sysLedCtrlGet"`
+	Resp ledCtrlGetResponse `json:"sysLedCtrlGet"`
 }
 
-type LedCtrlGetResponse struct {
+type ledCtrlGetResponse struct {
 	Enable string `json:"enable"`
 }
 
@@ -101,10 +99,10 @@ func (s *Session) LedCtrlGet() (bool, error) {
 }
 
 type ledCtrlSetRequestWrap struct {
-	Req LedCtrlSetRequest `json:"sysLedCtrlSet"`
+	Req ledCtrlSetRequest `json:"sysLedCtrlSet"`
 }
 
-type LedCtrlSetRequest struct {
+type ledCtrlSetRequest struct {
 	Enable string `json:"enable"`
 }
 
@@ -123,7 +121,7 @@ func (s *Session) LedCtrlSet(enable bool) (bool, error) {
 	}
 
 	rbody, err := json.Marshal(ledCtrlSetRequestWrap{
-		Req: LedCtrlSetRequest{
+		Req: ledCtrlSetRequest{
 			Enable: enableStr,
 		},
 	})

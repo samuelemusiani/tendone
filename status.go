@@ -2,6 +2,7 @@ package tendone
 
 import (
 	"encoding/json"
+	"errors"
 	"strconv"
 )
 
@@ -92,17 +93,30 @@ func (s *Session) ClientNum() (*ClientNum, error) {
 	return &wc.ClientNum, nil
 }
 
+var ErrInvalidRadio = errors.New("Invalid radio type")
+
 type RadioType string
 
-var Radio2_4G RadioType = "2.4G"
-var Radio5G RadioType = "5G"
+const (
+	Radio2_4G RadioType = "2.4G"
+	Radio5G   RadioType = "5G"
+)
 
-type RadioStatusRequest struct {
+func isValidRadio(radio RadioType) bool {
+	switch radio {
+	case Radio2_4G, Radio5G:
+		return true
+	default:
+		return false
+	}
+}
+
+type radioStatusRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
 type radioStatusRequestWrap struct {
-	RadioStatus RadioStatusRequest `json:"wifiRadioStatus"`
+	RadioStatus radioStatusRequest `json:"wifiRadioStatus"`
 }
 
 type RadioStatusResponse struct {
@@ -116,7 +130,11 @@ type radioStatusResponseWrap struct {
 }
 
 func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
-	rbody, err := json.Marshal(radioStatusRequestWrap{RadioStatusRequest{Radio: radio}})
+	if !isValidRadio(radio) {
+		return nil, ErrInvalidRadio
+	}
+
+	rbody, err := json.Marshal(radioStatusRequestWrap{radioStatusRequest{Radio: radio}})
 	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
@@ -132,10 +150,10 @@ func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
 }
 
 type ssidListRequestWrap struct {
-	SSIDList SSIDListRequest `json:"wifiSsidList"`
+	SSIDList ssidListRequest `json:"wifiSsidList"`
 }
 
-type SSIDListRequest struct {
+type ssidListRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
@@ -153,7 +171,7 @@ type SSID struct {
 }
 
 func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
-	rbody, err := json.Marshal(ssidListRequestWrap{SSIDListRequest{Radio: radio}})
+	rbody, err := json.Marshal(ssidListRequestWrap{ssidListRequest{Radio: radio}})
 	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
@@ -169,10 +187,10 @@ func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
 }
 
 type trafficRequestWrap struct {
-	Traffic TrafficRequest `json:"wifiTraffic"`
+	Traffic trafficRequest `json:"wifiTraffic"`
 }
 
-type TrafficRequest struct {
+type trafficRequest struct {
 	Radio RadioType `json:"radio"`
 }
 
@@ -193,7 +211,11 @@ type SSIDTraffic struct {
 }
 
 func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
-	rbody, err := json.Marshal(trafficRequestWrap{TrafficRequest{Radio: radio}})
+	if !isValidRadio(radio) {
+		return nil, ErrInvalidRadio
+	}
+
+	rbody, err := json.Marshal(trafficRequestWrap{trafficRequest{Radio: radio}})
 	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
@@ -209,10 +231,10 @@ func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
 }
 
 type clientListRequestWrap struct {
-	ClientListRequest ClientListRequest `json:"wifiClientList"`
+	ClientListRequest clientListRequest `json:"wifiClientList"`
 }
 
-type ClientListRequest struct {
+type clientListRequest struct {
 	Radio     RadioType `json:"radio"`
 	SSIDIndex string    `json:"ssidIndex"`
 }
@@ -241,7 +263,7 @@ type WifiClient struct {
 }
 
 func (s *Session) ClientList(radio RadioType, ssidIndex int) (*ClientListResponse, error) {
-	rbody, err := json.Marshal(clientListRequestWrap{ClientListRequest{Radio: radio, SSIDIndex: strconv.Itoa(ssidIndex)}})
+	rbody, err := json.Marshal(clientListRequestWrap{clientListRequest{Radio: radio, SSIDIndex: strconv.Itoa(ssidIndex)}})
 	resp, err := fetch(s, rbody)
 	if err != nil {
 		return nil, err
