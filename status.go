@@ -52,7 +52,7 @@ func (s *Session) GetSysStatus() (*SysStatus, error) {
 	}
 
 	var ss sysStatusWrap
-	err = json.NewDecoder(resp.Body).Decode(&ss)
+	err = json.Unmarshal(resp, &ss)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (s *Session) LanStatus() (*LanStatus, error) {
 	}
 
 	var ls lanStatusWrap
-	err = json.NewDecoder(resp.Body).Decode(&ls)
+	err = json.Unmarshal(resp, &ls)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (s *Session) ClientNum() (*ClientNum, error) {
 	}
 
 	var wc clientNumWrap
-	err = json.NewDecoder(resp.Body).Decode(&wc)
+	err = json.Unmarshal(resp, &wc)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (s *Session) RadioStatus(radio RadioType) (*RadioStatusResponse, error) {
 	}
 
 	var wr radioStatusResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&wr)
+	err = json.Unmarshal(resp, &wr)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func (s *Session) SSIDList(radio RadioType) (*SSIDListResponse, error) {
 	}
 
 	var ws ssidListResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&ws)
+	err = json.Unmarshal(resp, &ws)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +200,7 @@ func (s *Session) Traffic(radio RadioType) (*TrafficResponse, error) {
 	}
 
 	var tr trafficResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&tr)
+	err = json.Unmarshal(resp, &tr)
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +248,7 @@ func (s *Session) ClientList(radio RadioType, ssidIndex int) (*ClientListRespons
 	}
 
 	var cl clientListResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&cl)
+	err = json.Unmarshal(resp, &cl)
 	if err != nil {
 		return nil, err
 	}

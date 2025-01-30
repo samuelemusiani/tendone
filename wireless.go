@@ -42,7 +42,7 @@ func (s *Session) BasicGetIndoor(radio RadioType, ssidIndex string) (*BasicGetIn
 	}
 
 	var wr basicGetIndoorResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&wr)
+	err = json.Unmarshal(resp, &wr)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s *Session) BasicSetIndoor(bs BasicSetIndoorRequest) (bool, error) {
 	}
 
 	var wr basicSetIndoorResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&wr)
+	err = json.Unmarshal(resp, &wr)
 	if err != nil {
 		return false, err
 	}
@@ -175,7 +175,7 @@ func (s *Session) SSIDSecurityGet(radio RadioType, ssidIndex string) (*SSIDSecur
 	}
 
 	var wr ssidSecurityResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&wr)
+	err = json.Unmarshal(resp, &wr)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +199,7 @@ func (s *Session) SSIDSecuritySet(ssr SSIDSecurityResponse) (bool, error) {
 	}
 
 	var wr ssidSecuritySetResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&wr)
+	err = json.Unmarshal(resp, &wr)
 	if err != nil {
 		return false, err
 	}
@@ -259,7 +259,7 @@ func (s *Session) ChannelAnalyse(radio RadioType) (*ChannelAnalyseResponse, erro
 	resp, err := fetch(s, rbody)
 
 	var wr channelAnalyseResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&wr)
+	err = json.Unmarshal(resp, &wr)
 	if err != nil {
 		return nil, err
 	}

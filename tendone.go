@@ -26,6 +26,9 @@ package tendone
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 )
 
@@ -51,9 +54,21 @@ func (s *Session) GetURI() string {
 	return s.uri
 }
 
-// As almost all the functions in this library are the same, this function is used
-// to fetch the data from the access point avoiding code duplication.
-func fetch(s *Session, body []byte) (*http.Response, error) {
+var ErrLoggedOut = errors.New("Session is logged out")
+var ErrMSGNotValid = errors.New("Message not valid")
+
+type errCodeWrap struct {
+	ErrCode string `json:"errCode"`
+}
+
+type notValidWrap struct {
+	NotValid string `json:"resp"`
+}
+
+// As almost all the functions in this library are the same, this function is
+// used to fetch the data from the access point avoiding code duplication.
+// Returns the response body and an error if any.
+func fetch(s *Session, body []byte) ([]byte, error) {
 	req, err := http.NewRequest("POST", s.uri+MODULES_PATH, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -68,5 +83,38 @@ func fetch(s *Session, body []byte) (*http.Response, error) {
 		return nil, err
 	}
 
-	return resp, nil
+	rbody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var errCode errCodeWrap
+	err = json.Unmarshal(rbody, &errCode)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(errCode.ErrCode) > 0 {
+		if errCode.ErrCode == "logout" {
+			return nil, ErrLoggedOut
+		} else {
+			return nil, errors.New("Error code: " + errCode.ErrCode)
+		}
+	}
+
+	var notValid notValidWrap
+	err = json.Unmarshal(rbody, &notValid)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(notValid.NotValid) > 0 {
+		if notValid.NotValid == "not valid msg" {
+			return nil, ErrMSGNotValid
+		} else {
+			return nil, errors.New("Not valid: " + notValid.NotValid)
+		}
+	}
+
+	return rbody, nil
 }

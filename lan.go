@@ -47,7 +47,7 @@ func (s *Session) LanConfigGet() (*LanConfig, error) {
 	}
 
 	var lcr lanConfigGetResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&lcr)
+	err = json.Unmarshal(resp, &lcr)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (s *Session) LanConfigSet(lc *LanConfig) (bool, error) {
 	}
 
 	var lcs lanConfigSetResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&lcs)
+	err = json.Unmarshal(resp, &lcs)
 	if err != nil {
 		return false, err
 	}

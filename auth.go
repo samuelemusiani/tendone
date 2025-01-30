@@ -139,11 +139,16 @@ func (s *Session) Logout() (bool, error) {
 	}
 
 	var SysLoginResponse loginResponseWrap
-	if err := json.NewDecoder(resp.Body).Decode(&SysLoginResponse); err != nil {
+	if err := json.Unmarshal(resp, &SysLoginResponse); err != nil {
 		return false, err
 	}
 
-	if SysLoginResponse.SysLogin.Logoff.(string) == "ok" {
+	logoff, ok := SysLoginResponse.SysLogin.Logoff.(string)
+	if !ok {
+		return false, fmt.Errorf("Logoff is not a string")
+	}
+
+	if logoff == "ok" {
 		return true, nil
 	}
 

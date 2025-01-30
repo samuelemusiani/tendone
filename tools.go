@@ -84,7 +84,7 @@ func (s *Session) LedCtrlGet() (bool, error) {
 	}
 
 	var lcr ledCtrlGetResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&lcr)
+	err = json.Unmarshal(resp, &lcr)
 	if err != nil {
 		return false, err
 	}
@@ -127,7 +127,7 @@ func (s *Session) LedCtrlSet(enable bool) (bool, error) {
 	}
 
 	var lcr ledCtrlSetResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&lcr)
+	err = json.Unmarshal(resp, &lcr)
 	if err != nil {
 		return false, err
 	}
@@ -162,7 +162,7 @@ func (s *Session) Logs() ([]LogsResponse, error) {
 	}
 
 	var lr logsResponseWrap
-	err = json.NewDecoder(resp.Body).Decode(&lr)
+	err = json.Unmarshal(resp, &lr)
 	if err != nil {
 		return nil, err
 	}
