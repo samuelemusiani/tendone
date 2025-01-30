@@ -2,6 +2,7 @@ package tendone
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"os"
@@ -23,6 +24,10 @@ func (s *Session) Reboot() error {
 
 	// No Response for the reboot command
 	_, err = fetch(s, rbody)
+	if errors.Is(err, ErrEmptyResponse) {
+		return nil
+	}
+
 	return err
 }
 

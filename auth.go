@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -140,7 +141,7 @@ func (s *Session) Logout() (bool, error) {
 
 	var SysLoginResponse loginResponseWrap
 	if err := json.Unmarshal(resp, &SysLoginResponse); err != nil {
-		return false, err
+		return false, errors.Join(err, errors.New("Body: "+string(resp)))
 	}
 
 	logoff, ok := SysLoginResponse.SysLogin.Logoff.(string)
@@ -153,5 +154,4 @@ func (s *Session) Logout() (bool, error) {
 	}
 
 	return false, nil
-
 }

@@ -65,6 +65,8 @@ type notValidWrap struct {
 	NotValid string `json:"resp"`
 }
 
+var ErrEmptyResponse = errors.New("Empty response")
+
 // As almost all the functions in this library are the same, this function is
 // used to fetch the data from the access point avoiding code duplication.
 // Returns the response body and an error if any.
@@ -88,10 +90,14 @@ func fetch(s *Session, body []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	if len(rbody) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
 	var errCode errCodeWrap
 	err = json.Unmarshal(rbody, &errCode)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(err, errors.New("Data: "+string(rbody)))
 	}
 
 	if len(errCode.ErrCode) > 0 {
@@ -105,7 +111,7 @@ func fetch(s *Session, body []byte) ([]byte, error) {
 	var notValid notValidWrap
 	err = json.Unmarshal(rbody, &notValid)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(err, errors.New("Data: "+string(rbody)))
 	}
 
 	if len(notValid.NotValid) > 0 {
