@@ -8,14 +8,14 @@ import (
 )
 
 type rebootRequestWrap struct {
-	RebootRequest RebootRequest `json:"sysReboot"`
+	Req RebootRequest `json:"sysReboot"`
 }
 
 type RebootRequest string
 
 func (s *Session) Reboot() error {
 	rbody, err := json.Marshal(rebootRequestWrap{
-		RebootRequest: "",
+		Req: "",
 	})
 	if err != nil {
 		return err
@@ -58,4 +58,79 @@ func (s *Session) Backup(path string) error {
 
 	_, err = io.Copy(file, resp.Body)
 	return err
+}
+
+type ledCtrlRequestWrap struct {
+	Req interface{} `json:"sysLedCtrlGet"`
+}
+
+type ledCtrlGetResponseWrap struct {
+	Resp LedCtrlGetResponse `json:"sysLedCtrlGet"`
+}
+
+type LedCtrlGetResponse struct {
+	Enable string `json:"enable"`
+}
+
+func (s *Session) LedCtrlGet() (bool, error) {
+	rbody, err := json.Marshal(ledCtrlRequestWrap{})
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := fetch(s, rbody)
+	if err != nil {
+		return false, err
+	}
+
+	var lcr ledCtrlGetResponseWrap
+	err = json.NewDecoder(resp.Body).Decode(&lcr)
+	if err != nil {
+		return false, err
+	}
+
+	return lcr.Resp.Enable == "on", nil
+}
+
+type ledCtrlSetRequestWrap struct {
+	Req LedCtrlSetRequest `json:"sysLedCtrlSet"`
+}
+
+type LedCtrlSetRequest struct {
+	Enable string `json:"enable"`
+}
+
+type ledCtrlSetResponseWrap struct {
+	Resp string `json:"enable"`
+}
+
+func (s *Session) LedCtrlSet(enable bool) (bool, error) {
+	var enableStr string
+	if enable {
+		enableStr = "on"
+	} else {
+		enableStr = "off"
+	}
+
+	rbody, err := json.Marshal(ledCtrlSetRequestWrap{
+		Req: LedCtrlSetRequest{
+			Enable: enableStr,
+		},
+	})
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := fetch(s, rbody)
+	if err != nil {
+		return false, err
+	}
+
+	var lcr ledCtrlSetResponseWrap
+	err = json.NewDecoder(resp.Body).Decode(&lcr)
+	if err != nil {
+		return false, err
+	}
+
+	return lcr.Resp == "ok", nil
 }
