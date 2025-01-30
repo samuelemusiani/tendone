@@ -21,6 +21,9 @@ fmt.Println("Logged in:", logged)
 
 ## Todo
 
+The following list is based on the web interface of the Tenda i27 AP. I don't
+have plans to implement all of them, but I will try to implement the most important ones.
+
 - [x] Status
     - [x] System Status
     - [x] Wireless Status
@@ -45,6 +48,12 @@ fmt.Println("Logged in:", logged)
 - [ ] Tools
     - [ ] Date & Time
     - [ ] Maintenance
+        - [x] Reboot
+        - [ ] Reset
+        - [ ] Upgrade
+        - [x] Backup
+        - [ ] Restore
+        - [x] Led
     - [ ] Account
     - [ ] System Log
     - [ ] Diagnostic Tool
