@@ -55,6 +55,6 @@ have plans to implement all of them, but I will try to implement the most import
         - [ ] Restore
         - [x] Led
     - [ ] Account
-    - [ ] System Log
+    - [x] System Log
     - [ ] Diagnostic Tool
     - [ ] Uplink Detection

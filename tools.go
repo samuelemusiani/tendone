@@ -134,3 +134,52 @@ func (s *Session) LedCtrlSet(enable bool) (bool, error) {
 
 	return lcr.Resp == "ok", nil
 }
+
+type logsRequestWrap struct {
+	Req interface{} `json:"sysLogGet"`
+}
+
+type logsResponseWrap struct {
+	Resp []LogsResponse `json:"sysLogGet"`
+}
+
+type LogsResponse struct {
+	Index int    `json:"index"`
+	Time  string `json:"time"`
+	Type  string `json:"type"`
+	Info  string `json:"info"`
+}
+
+func (s *Session) Logs() ([]LogsResponse, error) {
+	rbody, err := json.Marshal(logsRequestWrap{})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := fetch(s, rbody)
+	if err != nil {
+		return nil, err
+	}
+
+	var lr logsResponseWrap
+	err = json.NewDecoder(resp.Body).Decode(&lr)
+	if err != nil {
+		return nil, err
+	}
+
+	return lr.Resp, nil
+}
+
+type logsClearRequestWrap struct {
+	Req interface{} `json:"sysLogClear"`
+}
+
+func (s *Session) LogsClear() error {
+	rbody, err := json.Marshal(logsClearRequestWrap{})
+	if err != nil {
+		return err
+	}
+
+	_, err = fetch(s, rbody)
+	return err
+}
