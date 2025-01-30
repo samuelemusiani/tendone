@@ -20,7 +20,23 @@ that can be used to interact with the device.
 	// Logout the session
 	lg, err = s.Logout()
 
-The code does not check for errors, but you should always do it.
+The example code does not check for errors, but you should always do it.
+
+# Known Issues
+
+The following are some known issues with the Tenda i27 access point. There are
+not related to the library, but rather to the device itself.
+
+1) For some reason if you make a lot of requests in a short period of time, the
+webui login will stop working. After sometime it could start working again, but
+other times you need to reboot the device. Please note that the api of this
+library will continue to work even if the webui login is not working. So you
+can reboot the device with the library.
+
+2) If you have an open session on the webui and you login with the library, the
+first session will be logged out (so the first login will not work).
+
+3) You can't have multiple sessions with the same device.
 */
 package tendone
 

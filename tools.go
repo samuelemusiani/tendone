@@ -14,6 +14,8 @@ type rebootRequestWrap struct {
 
 type RebootRequest string
 
+// Reboot the AP. Expect the connection to be closed after this command. Logout
+// is not needed.
 func (s *Session) Reboot() error {
 	rbody, err := json.Marshal(rebootRequestWrap{
 		Req: "",
@@ -77,6 +79,7 @@ type LedCtrlGetResponse struct {
 	Enable string `json:"enable"`
 }
 
+// Get the status of the LED on the AP
 func (s *Session) LedCtrlGet() (bool, error) {
 	rbody, err := json.Marshal(ledCtrlRequestWrap{})
 	if err != nil {
@@ -109,6 +112,8 @@ type ledCtrlSetResponseWrap struct {
 	Resp string `json:"enable"`
 }
 
+// Set the status of the LED on the AP. If enable is false, the LED will be
+// turned off.
 func (s *Session) LedCtrlSet(enable bool) (bool, error) {
 	var enableStr string
 	if enable {
@@ -155,6 +160,7 @@ type LogsResponse struct {
 	Info  string `json:"info"`
 }
 
+// Get the logs from the AP
 func (s *Session) Logs() ([]LogsResponse, error) {
 	rbody, err := json.Marshal(logsRequestWrap{})
 	if err != nil {
@@ -179,6 +185,7 @@ type logsClearRequestWrap struct {
 	Req interface{} `json:"sysLogClear"`
 }
 
+// Clear the logs on the AP
 func (s *Session) LogsClear() error {
 	rbody, err := json.Marshal(logsClearRequestWrap{})
 	if err != nil {

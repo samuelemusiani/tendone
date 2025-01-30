@@ -69,7 +69,7 @@ func (s *Session) IsAutheticated() (bool, error) {
 	}
 
 	// To check if we are authenticated we simply check if the body
-	// contains the strings from the login page
+	// contains the strings from the login page.
 	sbody := string(body)
 	if strings.Contains(sbody, "login-body") && strings.Contains(sbody, "login-title") {
 		return false, nil
@@ -80,6 +80,10 @@ func (s *Session) IsAutheticated() (bool, error) {
 
 // Login is used to login a session with the AP. This should be the first function
 // to be called after creating a new session.
+//
+// You can't have multiple sessions for the same AP. You should always call
+// logout after you are done with the session.
+// For more information, please refer to the known issues in the docs about session management.
 func (s *Session) Login(user, passwd string) (bool, error) {
 	bpasswd := base64.StdEncoding.EncodeToString([]byte(passwd))
 
