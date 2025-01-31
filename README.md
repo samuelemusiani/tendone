@@ -36,7 +36,7 @@ have plans to implement all of them, but I will try to implement the most import
     - [ ] RF Settings
     - [ ] RF Optimization
     - [x] Frequency Analysis
-    - [ ] WMM
+    - [x] WMM
     - [ ] Access Control
     - [ ] Advanced Settings
     - [ ] QVLAN Settings

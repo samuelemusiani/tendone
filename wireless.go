@@ -316,3 +316,154 @@ func (s *Session) APAnalyse(radio RadioType) ([]ApAnalyseResponse, error) {
 
 	return wr.Resp, nil
 }
+
+type wmmGetRequestWrap struct {
+	Req wmmGetRequest `json:"wifiWmmGet"`
+}
+
+type wmmGetRequest struct {
+	Radio RadioType `json:"radio"`
+}
+
+type wmmGetResponseWrap struct {
+	Resp WmmGetResponse `json:"wifiWmmGet"`
+}
+
+type WmmConfig struct {
+	Be string `json:"be"`
+	Bk string `json:"bk"`
+	Vi string `json:"vi"`
+	Vo string `json:"vo"`
+}
+
+type WmmStaConfig struct {
+	Be string `json:"be"`
+	Bk string `json:"bk"`
+	Vi string `json:"vi"`
+	Vo string `json:"vo"`
+}
+
+type WmmMode string
+
+const (
+	// Optimize for scenarios with 1-10 users
+	WmmModeNormal WmmMode = "normal"
+	// Optimize for scenarios with more than 10 users
+	WmmModeHigh WmmMode = "high"
+	// Custom settings
+	WmmModeCustom WmmMode = "custom"
+)
+
+func IsValidWmmMode(m WmmMode) bool {
+	switch m {
+	case WmmModeHigh, WmmModeNormal, WmmModeCustom:
+		return true
+	default:
+		return false
+	}
+}
+
+var ErrInvalidWmmMode = errors.New("Invalid WMM mode")
+
+type WmmGetResponse struct {
+	Enabled   bool         `json:"wmmEn"`
+	NoAck     bool         `json:"noAck"`
+	Mode      WmmMode      `json:"wmmMode"`
+	Config    WmmConfig    `json:"wmmConfig"`
+	StaConfig WmmStaConfig `json:"wmmStaConfig"`
+}
+
+type wmmSetRequestWrap struct {
+	Req WmmSetRequest `json:"wifiWmmSet"`
+}
+
+type WmmSetRequest struct {
+	Radio     RadioType    `json:"radio"`
+	NoAck     string       `json:"noAck"`
+	Mode      WmmMode      `json:"wmmMode"`
+	Enabled   bool         `json:"wmmEn"`
+	Config    WmmConfig    `json:"wmmConfig"`
+	StaConfig WmmStaConfig `json:"wmmStaConfig"`
+}
+
+type wmmSetResponseWrap struct {
+	Resp string `json:"wifiWmmSet"`
+}
+
+func (r WmmGetResponse) IntoSetRequest(radio RadioType) WmmSetRequest {
+	var ack string
+	switch r.NoAck {
+	case true:
+		ack = "true"
+	case false:
+		ack = "false"
+	}
+	return WmmSetRequest{
+		Radio:     radio,
+		NoAck:     ack,
+		Mode:      r.Mode,
+		Enabled:   r.Enabled,
+		Config:    r.Config,
+		StaConfig: r.StaConfig,
+	}
+}
+
+func (s *Session) WmmGet(radio RadioType) (*WmmGetResponse, error) {
+	if !isValidRadio(radio) {
+		return nil, ErrInvalidRadio
+	}
+
+	rbody, err := json.Marshal(wmmGetRequestWrap{wmmGetRequest{Radio: radio}})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := fetch(s, rbody)
+	if err != nil {
+		return nil, err
+	}
+
+	var wr wmmGetResponseWrap
+	err = json.Unmarshal(resp, &wr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &wr.Resp, nil
+}
+
+func (s *Session) WmmSet(wsr WmmSetRequest) (bool, error) {
+	if !isValidRadio(wsr.Radio) {
+		return false, ErrInvalidRadio
+	}
+
+	if wsr.NoAck != "true" && wsr.NoAck != "false" {
+		return false, errors.New("Invalid NoAck value")
+	}
+
+	if !IsValidWmmMode(wsr.Mode) {
+		return false, ErrInvalidWmmMode
+	}
+
+	rbody, err := json.Marshal(wmmSetRequestWrap{Req: wsr})
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := fetch(s, rbody)
+	if err != nil {
+		return false, err
+	}
+
+	var wr wmmSetResponseWrap
+	err = json.Unmarshal(resp, &wr)
+	if err != nil {
+		return false, err
+	}
+
+	if wr.Resp != "ok" {
+		return false, errors.New("Failed to set WMM: " + wr.Resp)
+	}
+
+	return true, nil
+}
