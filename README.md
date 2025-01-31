@@ -18,6 +18,25 @@ if err != nil {
 fmt.Println("Logged in:", logged)
 ```
 
+Get the system status:
+```go
+status, err := s.GetSysStatus()
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(status)
+```
+
+Logout the session:
+```go
+slogged, err := s.Logout()
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Logged out:", slogged)
+```
+
+For the full docs see the [godoc](https://pkg.go.dev/github.com/samuelemusiani/tendone).
 
 ## Todo
 
