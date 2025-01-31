@@ -1,10 +1,11 @@
 # Tendone
 
-A simple Go library for the Tenda i27 AP. This could be used to get and set parameteres in a Tenda i27 AP from a go program.
+A simple Go library for the Tenda i27 AP. It could be used to get and set 
+parameters in a Tenda i27 AP from a Go program.
 
 ## Usage
 
-First create a session based on the uri of your Tenda i27 AP:
+First create a session based on the URI of your Tenda i27 AP:
 ```go
 s := tendone.NewSession("http://tenda-ap.int")
 ```
@@ -41,7 +42,8 @@ For the full docs see the [godoc](https://pkg.go.dev/github.com/samuelemusiani/t
 ## Todo
 
 The following list is based on the web interface of the Tenda i27 AP. I don't
-have plans to implement all of them, but I will try to implement the most important ones.
+have plans to implement all of them, but I will try to implement the most 
+important ones.
 
 - [x] Status
     - [x] System Status

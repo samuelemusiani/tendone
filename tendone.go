@@ -1,7 +1,7 @@
 /*
 Package tendone provides a simple library to interact with a Tenda i27 access
-point. This could be used to automate some tasks, monitor the device or to
-create a new and better web interface with simpler and more powerful apis.
+point. This could be used to automate some tasks, monitor the device or create
+a new and better web interface with simpler and more powerful APIs.
 This could also be used to automate changes across multiple devices, without
 exposing them to the internet with the Tenda could service.
 
@@ -24,16 +24,16 @@ The example code does not check for errors, but you should always do it.
 
 # Known Issues
 
-The following are some known issues with the Tenda i27 access point. There are
+The following are some known issues with the Tenda i27 access point. They are
 not related to the library, but rather to the device itself.
 
-1) For some reason if you make a lot of requests in a short period of time, the
-webui login will stop working. After sometime it could start working again, but
-other times you need to reboot the device. Please note that the api of this
-library will continue to work even if the webui login is not working. So you
+1) For some reason if you make a lot of requests in a short period, the
+WebUI login will stop working. After some time it could start working again, but
+other times you need to reboot the device. Please note that the APIs of this
+library will continue to work even if the WebUI login is not working. So you
 can reboot the device with the library.
 
-2) If you have an open session on the webui and you login with the library, the
+2) If you have an open session on the WebUI and log in with the library, the
 first session will be logged out (so the first login will not work).
 
 3) You can't have multiple sessions with the same device.
