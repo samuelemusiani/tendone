@@ -240,6 +240,8 @@ type ChannelAnalyseResponse struct {
 	Percent   string `json:"channelPercent"`
 }
 
+// In the webui this is the 'Frequency Analysis' even though it's called
+// 'Channel Analysis' in the API. For the Channel Scan, see [Session.APAnalyse]
 func (s *Session) ChannelAnalyse(radio RadioType) (*ChannelAnalyseResponse, error) {
 	var channels ChannelList
 	switch radio {
@@ -265,4 +267,52 @@ func (s *Session) ChannelAnalyse(radio RadioType) (*ChannelAnalyseResponse, erro
 	}
 
 	return &wr.Resp, nil
+}
+
+type apAnalyseRequestWrap struct {
+	Req apAnalyseRequest `json:"wifiApAnalyse"`
+}
+
+type apAnalyseRequest struct {
+	Radio RadioType `json:"radio"`
+}
+
+type apAnalyseResponseWrap struct {
+	Resp []ApAnalyseResponse `json:"wifiApAnalyse"`
+}
+
+type ApAnalyseResponse struct {
+	Index     int    `json:"index"`
+	SSID      string `json:"ssid"`
+	Channel   int    `json:"channel"`
+	SSIDEcode string `json:"ssidEncode"`
+	Mac       string `json:"mac"`
+	Security  string `json:"secType"`
+	Bandwidth string `json:"bandwidth"`
+	Signal    int    `json:"signal"`
+	Netmode   string `json:"netmode"`
+}
+
+func (s *Session) APAnalyse(radio RadioType) ([]ApAnalyseResponse, error) {
+	if !isValidRadio(radio) {
+		return nil, ErrInvalidRadio
+	}
+
+	rbody, err := json.Marshal(apAnalyseRequestWrap{apAnalyseRequest{Radio: radio}})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := fetch(s, rbody)
+	if err != nil {
+		return nil, err
+	}
+
+	var wr apAnalyseResponseWrap
+	err = json.Unmarshal(resp, &wr)
+	if err != nil {
+		return nil, err
+	}
+
+	return wr.Resp, nil
 }

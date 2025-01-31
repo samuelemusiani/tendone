@@ -35,7 +35,7 @@ have plans to implement all of them, but I will try to implement the most import
     - [x] SSID
     - [ ] RF Settings
     - [ ] RF Optimization
-    - [ ] Frequency Analysis
+    - [x] Frequency Analysis
     - [ ] WMM
     - [ ] Access Control
     - [ ] Advanced Settings
